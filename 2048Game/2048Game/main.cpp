@@ -7,7 +7,16 @@
 using namespace std;
 
 int main() {
-	int playingArea[MATRIX_SIZE][MATRIX_SIZE] = { 0 };
-	play(playingArea);
+	char opt;
+	cout << "Press ENTER key to start playing or q to quit" << endl;
+	do {
+		opt = _getch();
+		if (opt == '\r') {
+			system("cls");
+			play();
+			cout << "Press ENTER to play again or q to quit";
+		}
+	} while (opt != 'q');
+
 	return 0;
 }

@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <conio.h>
 #include <iomanip>
-#include <string>
 
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -12,6 +11,8 @@
 using namespace std;
 
 const int MATRIX_SIZE = 4;
+int matrix[MATRIX_SIZE][MATRIX_SIZE];
+int score;
 
 void cls() {
 	COORD coord;
@@ -20,74 +21,120 @@ void cls() {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-void moveUp(int matrix[][MATRIX_SIZE]) {
+void moveUp() {
 	for (int i = MATRIX_SIZE - 1;i >= 1;i--) {
+		for (int i = 0;i < MATRIX_SIZE - 1;i++) {
+			for (int j = 0;j < MATRIX_SIZE;j++) {
+				if (matrix[i + 1][j] == matrix[i][j]) {
+					matrix[i][j] = matrix[i][j] * 2;
+					score += matrix[i][j];
+					matrix[i + 1][j] = 0;
+				}
+			}
+		}
 		for (int j = 0;j < MATRIX_SIZE;j++) {
 			if (matrix[i - 1][j] == 0) {
 				matrix[i - 1][j] = matrix[i][j];
 				matrix[i][j] = 0;
 			}
-		}
-	}
-	for (int i = 0;i < MATRIX_SIZE - 1;i++) {
-		for (int j = 0;j < MATRIX_SIZE;j++) {
-			if (matrix[i + 1][j] == matrix[i][j]) {
-				matrix[i][j] = matrix[i][j] * 2;
-				matrix[i + 1][j] = 0;
+			if (matrix[i - 1][j] != 0 && matrix[i - 2][j] == 0) {
+				matrix[i - 2][j] = matrix[i - 1][j];
+				matrix[i - 1][j] = matrix[i][j];
+				matrix[i][j] = 0;
+			}
+			if (matrix[i - 1][j] != 0 && matrix[i - 2][j] != 0 && matrix[i - 3][j] == 0) {
+				matrix[i - 3][j] = matrix[i - 2][j];
+				matrix[i - 2][j] = matrix[i - 1][j];
+				matrix[i - 1][j] = matrix[i][j];
+				matrix[i][j] = 0;
 			}
 		}
 	}
-
 }
-void moveDown(int matrix[][MATRIX_SIZE]) {
+void moveDown() {
 	for (int i = 0;i < MATRIX_SIZE - 1;i++) {
+		for (int i = MATRIX_SIZE - 1;i >= 1;i--) {
+			for (int j = 0;j < MATRIX_SIZE;j++) {
+				if (matrix[i - 1][j] == matrix[i][j]) {
+					matrix[i][j] = matrix[i][j] * 2;
+					score += matrix[i][j];
+					matrix[i - 1][j] = 0;
+				}
+			}
+		}
 		for (int j = 0;j < MATRIX_SIZE;j++) {
 			if (matrix[i + 1][j] == 0) {
 				matrix[i + 1][j] = matrix[i][j];
 				matrix[i][j] = 0;
 			}
-		}
-	}
-	for (int i = MATRIX_SIZE - 1;i >= 1;i--) {
-		for (int j = 0;j < MATRIX_SIZE;j++) {
-			if (matrix[i - 1][j] == matrix[i][j]) {
-				matrix[i][j] = matrix[i][j] * 2;
-				matrix[i - 1][j] = 0;
+			if (matrix[i + 1][j] != 0 && matrix[i + 2][j] == 0) {
+				matrix[i + 2][j] = matrix[i + 1][j];
+				matrix[i + 1][j] = matrix[i][j];
+				matrix[i][j] = 0;
+			}
+			if (matrix[i + 1][j] != 0 && matrix[i + 2][j] != 0 && matrix[i + 3][j] == 0) {
+				matrix[i + 3][j] = matrix[i + 2][j];
+				matrix[i + 2][j] = matrix[i + 1][j];
+				matrix[i + 1][j] = matrix[i][j];
+				matrix[i][j] = 0;
 			}
 		}
 	}
 }
-void moveLeft(int matrix[][MATRIX_SIZE]) {
+void moveLeft() {
 	for (int i = 0;i < MATRIX_SIZE;i++) {
+		for (int j = 0;j < MATRIX_SIZE - 1;j++) {
+			if (matrix[i][j + 1] == matrix[i][j]) {
+				matrix[i][j] = matrix[i][j] * 2;
+				score += matrix[i][j];
+				matrix[i][j + 1] = 0;
+			}
+		}
 		for (int j = MATRIX_SIZE - 1;j >= 1;j--) {
 			if (matrix[i][j - 1] == 0) {
 				matrix[i][j - 1] = matrix[i][j];
 				matrix[i][j] = 0;
 			}
 		}
-		for (int j = 0;j < MATRIX_SIZE - 1;j++) {
-			if (matrix[i][j + 1] == matrix[i][j]) {
-				matrix[i][j] = matrix[i][j] * 2;
-				matrix[i][j + 1] = 0;
-			}
-		}
 	}
 }
-void moveRight(int matrix[][MATRIX_SIZE]) {
+void moveRight() {
 	for (int i = 0;i < MATRIX_SIZE;i++) {
+		for (int j = MATRIX_SIZE - 1;j >= 1;j--) {
+			if (matrix[i][j - 1] == matrix[i][j]) {
+				matrix[i][j] = matrix[i][j] * 2;
+				score += matrix[i][j];
+				matrix[i][j - 1] = 0;
+			}
+		}
 		for (int j = 0;j < MATRIX_SIZE - 1;j++) {
 			if (matrix[i][j + 1] == 0) {
 				matrix[i][j + 1] = matrix[i][j];
 				matrix[i][j] = 0;
 			}
 		}
-		for (int j = MATRIX_SIZE - 1;j >= 1;j--) {
-			if (matrix[i][j - 1] == matrix[i][j]) {
-				matrix[i][j] = matrix[i][j] * 2;
-				matrix[i][j - 1] = 0;
+	}
+}
+
+bool lost() {
+	for (int i = 0;i < MATRIX_SIZE; i++) {
+		for (int j = 0;j < MATRIX_SIZE;j++) {
+			if (matrix[i][j] == 0) {
+				return false;
 			}
 		}
 	}
+	return true;
+}
+bool won() {
+	for (int i = 0;i < MATRIX_SIZE; i++) {
+		for (int j = 0;j < MATRIX_SIZE;j++) {
+			if (matrix[i][j] == 2048) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 
@@ -115,7 +162,7 @@ int input() {
 	return -1;
 }
 
-void draw(int matrix[][MATRIX_SIZE]) {
+void draw() {
 	for (int i = 0;i < MATRIX_SIZE;i++) {
 		for (int j = 0;j < MATRIX_SIZE;j++) {
 			if (matrix[i][j] == 0) {
@@ -131,9 +178,10 @@ void draw(int matrix[][MATRIX_SIZE]) {
 		}
 		cout << endl;
 	}
+	cout << "Score: " << score;
 }
 
-void fill(int matrix[][MATRIX_SIZE]) {
+void fill() {
 
 	unsigned int num = (rand() % (2 + 1)) * 2;
 
@@ -156,30 +204,48 @@ void fill(int matrix[][MATRIX_SIZE]) {
 
 }
 
-int play(int matrix[][MATRIX_SIZE]) {
+void setMatrixZeroes() {
+	for (int i = 0;i < MATRIX_SIZE; i++) {
+		for (int j = 0;j < MATRIX_SIZE;j++) {
+			matrix[i][j] = 0;
+		}
+	}
+}
+
+void play() {
+
+	score = 0;
+	setMatrixZeroes();
 	int inp;
-	fill(matrix);
-	draw(matrix);
+	fill();
+	draw();
 
 	while (true) {
+		if (lost()) {
+			cout << endl << "You lost!" << endl;
+			break;
+		}
+		if (won()) {
+			cout << endl << "You won!" << endl;
+			break;
+		}
 		cls();
 		inp = input();
 		switch (inp) {
 		case KEY_UP:
-			moveUp(matrix);
+			moveUp();
 			break;
 		case KEY_DOWN:
-			moveDown(matrix);
+			moveDown();
 			break;
 		case KEY_LEFT:
-			moveLeft(matrix);
+			moveLeft();
 			break;
 		case KEY_RIGHT:
-			moveRight(matrix);
+			moveRight();
 			break;
 		}
-		fill(matrix);
-		draw(matrix);
+		fill();
+		draw();
 	}
-	return 0;
 }
