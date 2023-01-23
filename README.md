@@ -10,7 +10,7 @@ Small projects I've developed in C++
 
 ### Snake Game
 
-* Remake of the well-known phone game.
+* Remake of the well-known phone game, must be played in fullscreen to avoid visual bugs.
 * The snake's head and tail, the fruit, the playing area's dimensions and the controls can be configured in the "settings" header file.
 
 ### 2048 Game
